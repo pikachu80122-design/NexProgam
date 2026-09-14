@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#09111f">
+  <meta name="description" content="CodeLab: um laboratório de programação para aprender Python e JavaScript praticando.">
+  <title>CodeLab — Aprenda programando</title>
+  <style>
+    :root {
+      --bg: #09111f;
+      --panel: #111c30;
+      --panel-2: #16243c;
+      --panel-3: #0d1728;
+      --text: #edf4ff;
+      --muted: #9eb0cb;
+      --line: rgba(171, 196, 230, .16);
+      --primary: #6ee7b7;
+      --primary-strong: #20c997;
+      --secondary: #93c5fd;
+      --danger: #fb7185;
+      --warning: #fbbf24;
+      --shadow: 0 24px 70px rgba(0, 0, 0, .28);
+      --radius: 18px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(32, 201, 151, .14), transparent 32rem),
+        radial-gradient(circle at 90% 10%, rgba(96, 165, 250, .14), transparent 28rem),
+        var(--bg);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    .shell { width: min(1240px, calc(100% - 32px)); margin: 0 auto; }
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      backdrop-filter: blur(18px);
+      background: rgba(9, 17, 31, .78);
+      border-bottom: 1px solid var(--line);
+    }
+    .topbar-inner { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: flex; align-items: center; gap: 11px; color: var(--text); text-decoration: none; font-weight: 800; letter-spacing: -.03em; }
+    .brand-mark { width: 38px; height: 38px; display: grid; place-items: center; border-radius: 12px; color: #061017; background: linear-gradient(135deg, var(--primary), var(--secondary)); font-weight: 950; box-shadow: 0 8px 24px rgba(32, 201, 151, .25); }
+    .nav { display: flex; gap: 8px; align-items: center; }
+    .nav a, .ghost-btn { color: var(--muted); text-decoration: none; background: transparent; border: 1px solid transparent; padding: 9px 12px; border-radius: 10px; font-size: .9rem; }
+    .nav a:hover, .ghost-btn:hover { color: var(--text); background: rgba(255,255,255,.06); border-color: var(--line); }
+    .hero { padding: 68px 0 42px; display: grid; grid-template-columns: 1.25fr .75fr; gap: 38px; align-items: center; }
+    .eyebrow { display: inline-flex; align-items: center; gap: 8px; padding: 7px 11px; border: 1px solid rgba(110, 231, 183, .28); color: var(--primary); border-radius: 99px; font-size: .78rem; font-weight: 750; text-transform: uppercase; letter-spacing: .08em; }
+    h1 { font-size: clamp(2.4rem, 6vw, 5rem); line-height: .98; margin: 19px 0 18px; letter-spacing: -.065em; max-width: 780px; }
+    .gradient { background: linear-gradient(100deg, #fff 8%, var(--primary) 48%, var(--secondary) 100%); background-clip: text; -webkit-background-clip: text; color: transparent; }
+    .hero p { max-width: 650px; color: var(--muted); font-size: 1.08rem; line-height: 1.7; margin: 0; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 28px; }
+    .primary-btn, .secondary-btn { border: 0; border-radius: 11px; padding: 12px 17px; font-weight: 800; transition: transform .18s ease, filter .18s ease; }
+    .primary-btn { background: linear-gradient(135deg, var(--primary), var(--primary-strong)); color: #061017; box-shadow: 0 12px 25px rgba(32, 201, 151, .2); }
+    .secondary-btn { background: rgba(147, 197, 253, .1); color: var(--secondary); border: 1px solid rgba(147, 197, 253, .22); }
+    .primary-btn:hover, .secondary-btn:hover { transform: translateY(-2px); filter: brightness(1.08); }
+    .hero-card { border: 1px solid var(--line); background: linear-gradient(145deg, rgba(22,36,60,.92), rgba(13,23,40,.9)); padding: 24px; border-radius: 22px; box-shadow: var(--shadow); transform: rotate(1.2deg); }
+    .window-bar { display: flex; gap: 7px; margin-bottom: 18px; }
+    .window-dot { width: 10px; height: 10px; border-radius: 50%; background: #fb7185; }
+    .window-dot:nth-child(2) { background: #fbbf24; }
+    .window-dot:nth-child(3) { background: #6ee7b7; }
+    .code-preview { font: .9rem/1.8 "SFMono-Regular", Consolas, monospace; color: #cfe2ff; }
+    .code-preview .comment { color: #6b7f9e; }
+    .code-preview .keyword { color: #c4b5fd; }
+    .code-preview .string { color: #86efac; }
+    .code-preview .fn { color: #93c5fd; }
+    .section-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin: 20px 0 16px; }
+    .section-heading h2 { margin: 0; font-size: 1.55rem; letter-spacing: -.035em; }
+    .section-heading p { margin: 0; color: var(--muted); font-size: .93rem; }
+    .workbench { display: grid; grid-template-columns: 1.08fr .92fr; gap: 16px; align-items: start; }
+    .panel { background: rgba(17, 28, 48, .9); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; }
+    .panel-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+    .panel-title { display: flex; align-items: center; gap: 9px; font-weight: 800; }
+    .status-dot { width: 9px; height: 9px; background: var(--primary); border-radius: 50%; box-shadow: 0 0 0 4px rgba(110, 231, 183, .1); }
+    .toolbar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+    .toolbar select, .tool-btn { border: 1px solid var(--line); color: var(--text); background: var(--panel-3); border-radius: 9px; padding: 8px 10px; font-size: .82rem; }
+    .tool-btn:hover { border-color: rgba(110,231,183,.48); color: var(--primary); }
+    .tool-btn.run { background: var(--primary); color: #061017; border-color: var(--primary); font-weight: 850; }
+    .editor-wrap { position: relative; background: #09111c; }
+    #codeEditor { width: 100%; min-height: 420px; display: block; resize: vertical; border: 0; outline: 0; padding: 19px; background: transparent; color: #e5efff; font: .92rem/1.65 "SFMono-Regular", Consolas, "Liberation Mono", monospace; tab-size: 2; }
+    #codeEditor::selection { background: rgba(110,231,183,.25); }
+    .editor-foot { padding: 9px 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: .76rem; display: flex; justify-content: space-between; gap: 12px; }
+    .console { min-height: 420px; background: #070d17; padding: 18px; font: .88rem/1.65 "SFMono-Regular", Consolas, monospace; overflow: auto; white-space: pre-wrap; word-break: break-word; }
+    .console.empty { color: #637593; }
+    .console .ok { color: #86efac; }
+    .console .err { color: #fda4af; }
+    .console .info { color: #93c5fd; }
+    .console .muted { color: #7184a4; }
+    .learning-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+    .lesson { padding: 19px; border: 1px solid var(--line); border-radius: 15px; background: rgba(17, 28, 48, .75); }
+    .lesson-icon { font-size: 1.5rem; }
+    .lesson h3 { margin: 10px 0 7px; font-size: 1.05rem; }
+    .lesson p { color: var(--muted); line-height: 1.55; font-size: .88rem; margin: 0 0 14px; }
+    .lesson pre { overflow: auto; color: #cfe2ff; background: #09111c; border: 1px solid var(--line); padding: 12px; border-radius: 10px; font: .76rem/1.55 "SFMono-Regular", Consolas, monospace; margin: 0 0 12px; }
+    .lesson button { width: 100%; border: 1px solid rgba(110,231,183,.25); background: rgba(110,231,183,.08); color: var(--primary); border-radius: 9px; padding: 9px; font-weight: 750; }
+    .lesson button:hover { background: rgba(110,231,183,.16); }
+    .project-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; padding-bottom: 70px; }
+    .project-card { border: 1px solid var(--line); border-radius: 15px; padding: 18px; background: linear-gradient(145deg, rgba(22,36,60,.76), rgba(13,23,40,.86)); }
+    .project-card h3 { margin: 0 0 8px; font-size: 1rem; }
+    .project-card p { margin: 0 0 15px; color: var(--muted); font-size: .86rem; line-height: 1.5; }
+    .project-card button { border: 1px solid var(--line); background: transparent; color: var(--secondary); border-radius: 9px; padding: 8px 10px; font-weight: 700; }
+    .project-card button:hover { border-color: var(--secondary); }
+    footer { border-top: 1px solid var(--line); padding: 22px 0 35px; color: var(--muted); font-size: .82rem; }
+    .toast { position: fixed; right: 20px; bottom: 20px; z-index: 20; transform: translateY(20px); opacity: 0; pointer-events: none; background: #17263f; border: 1px solid rgba(110,231,183,.35); color: var(--text); padding: 12px 15px; border-radius: 11px; box-shadow: var(--shadow); transition: .25s ease; font-size: .88rem; }
+    .toast.show { transform: translateY(0); opacity: 1; }
+    @media (max-width: 920px) { .hero, .workbench { grid-template-columns: 1fr; } .hero-card { transform: none; max-width: 650px; } .learning-grid, .project-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 620px) { .shell { width: min(100% - 22px, 1240px); } .topbar-inner { min-height: 64px; } .nav a { display: none; } .hero { padding-top: 42px; } h1 { font-size: clamp(2.35rem, 13vw, 4rem); } .panel-head { align-items: flex-start; flex-direction: column; } .learning-grid, .project-grid { grid-template-columns: 1fr; } #codeEditor, .console { min-height: 360px; } }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="#inicio" aria-label="CodeLab início"><span class="brand-mark">&lt;/&gt;</span><span>CodeLab</span></a>
+      <nav class="nav" aria-label="Navegação principal">
+        <a href="#laboratorio">Laboratório</a>
+        <a href="#aulas">Aulas</a>
+        <a href="#projetos">Projetos</a>
+        <button class="ghost-btn" id="themeButton" type="button">Foco no código</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="inicio" class="shell">
+    <section class="hero">
+      <div>
+        <span class="eyebrow">Aprenda fazendo • Python + JavaScript</span>
+        <h1>Seu laboratório para <span class="gradient">criar, testar e evoluir.</span></h1>
+        <p>Escreva projetos no navegador, execute o código e aprenda os fundamentos de Python e JavaScript com exemplos curtos e desafios práticos.</p>
+        <div class="hero-actions">
+          <a class="primary-btn" href="#laboratorio">Abrir laboratório</a>
+          <a class="secondary-btn" href="#aulas">Ver aulas rápidas</a>
+        </div>
+      </div>
+      <div class="hero-card" aria-label="Prévia de código">
+        <div class="window-bar"><span class="window-dot"></span><span class="window-dot"></span><span class="window-dot"></span></div>
+        <div class="code-preview">
+          <div><span class="comment"># seu primeiro programa</span></div>
+          <div><span class="keyword">nome</span> = <span class="string">"futuro dev"</span></div>
+          <div><span class="fn">print</span>(<span class="string">f"Olá, {nome}!"</span>)</div>
+          <br>
+          <div><span class="comment">// teste, erre e tente de novo</span></div>
+          <div><span class="keyword">const</span> ideia = <span class="string">"construir"</span>;</div>
+          <div>console.<span class="fn">log</span>(ideia);</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="laboratorio">
+      <div class="section-heading">
+        <div><h2>Laboratório de código</h2><p>Escolha uma linguagem, escreva e clique em executar.</p></div>
+      </div>
+      <div class="workbench">
+        <article class="panel">
+          <div class="panel-head">
+            <div class="panel-title"><span class="status-dot"></span><span>Editor</span></div>
+            <div class="toolbar">
+              <select id="languageSelect" aria-label="Escolha a linguagem">
+                <option value="python">Python</option>
+                <option value="javascript">JavaScript</option>
+              </select>
+              <button class="tool-btn" id="exampleButton" type="button">Exemplo</button>
+              <button class="tool-btn" id="saveButton" type="button">Salvar</button>
+              <button class="tool-btn run" id="runButton" type="button">▶ Executar</button>
+            </div>
+          </div>
+          <div class="editor-wrap">
+            <textarea id="codeEditor" spellcheck="false" aria-label="Editor de código"></textarea>
+          </div>
+          <div class="editor-foot"><span id="languageHint">Python roda com um interpretador carregado no navegador.</span><span id="charCount">0 caracteres</span></div>
+        </article>
+        <article class="panel">
+          <div class="panel-head"><div class="panel-title">▣ Saída do programa</div><button class="tool-btn" id="clearButton" type="button">Limpar</button></div>
+          <div id="console" class="console empty">A saída aparecerá aqui quando você executar o código.</div>
+        </article>
+      </div>
+    </section>
+
+    <section id="aulas">
+      <div class="section-heading"><div><h2>Aulas rápidas</h2><p>Conceitos essenciais para começar sem complicação.</p></div></div>
+      <div class="learning-grid">
+        <article class="lesson">
+          <div class="lesson-icon">🐍</div><h3>Variáveis em Python</h3>
+          <p>Guarde informações em nomes e use-as para montar seus programas.</p>
+          <pre>nome = "Ana"
+idade = 18
+print(nome, idade)</pre>
+          <button type="button" data-code="python" data-snippet="nome = &quot;Ana&quot;\nidade = 18\nprint(f&quot;{nome} tem {idade} anos.&quot;)">Testar este exemplo</button>
+        </article>
+        <article class="lesson">
+          <div class="lesson-icon">⚡</div><h3>Funções em JavaScript</h3>
+          <p>Reaproveite uma sequência de instruções criando funções.</p>
+          <pre>function dobro(numero) {
+  return numero * 2;
+}
+console.log(dobro(7));</pre>
+          <button type="button" data-code="javascript" data-snippet="function dobro(numero) {\n  return numero * 2;\n}\nconsole.log(dobro(7));">Testar este exemplo</button>
+        </article>
+        <article class="lesson">
+          <div class="lesson-icon">🔁</div><h3>Repetições com for</h3>
+          <p>Automatize tarefas repetidas e percorra listas de dados.</p>
+          <pre>for numero in range(1, 4):
+    print("Passo", numero)</pre>
+          <button type="button" data-code="python" data-snippet="for numero in range(1, 4):\n    print(&quot;Passo&quot;, numero)">Testar este exemplo</button>
+        </article>
+      </div>
+    </section>
+
+    <section id="projetos">
+      <div class="section-heading"><div><h2>Comece por um projeto</h2><p>Carregue uma ideia no editor e personalize como quiser.</p></div></div>
+      <div class="project-grid">
+        <article class="project-card"><h3>🧮 Calculadora de média</h3><p>Pratique listas, números e decisões com notas de uma turma.</p><button type="button" data-project="media">Abrir projeto</button></article>
+        <article class="project-card"><h3>🎲 Jogo de adivinhação</h3><p>Use entrada de dados, condições e aleatoriedade para criar um jogo.</p><button type="button" data-project="jogo">Abrir projeto</button></article>
+        <article class="project-card"><h3>🛒 Lista de compras</h3><p>Treine arrays, métodos e funções construindo uma lista simples.</p><button type="button" data-project="lista">Abrir projeto</button></article>
+      </div>
+    </section>
+  </main>
+
+  <footer><div class="shell">CodeLab • pratique um pouco hoje e fique melhor amanhã.</div></footer>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const examples = {
+      python: `# Seu primeiro programa em Python\nnome = "programador"\nfor numero in range(1, 4):\n    print(f"Olá, {nome}! Passo {numero}")`,
+      javascript: `// Seu primeiro programa em JavaScript\nconst nome = "programador";\nfor (let numero = 1; numero <= 3; numero++) {\n  console.log("Olá, " + nome + "! Passo " + numero);\n}`
+    };
+    const projects = {
+      media: `# Calculadora de média\nnotas = [8, 7.5, 9, 6]\nmedia = sum(notas) / len(notas)\nprint("Notas:", notas)\nprint("Média:", round(media, 2))\nif media >= 7:\n    print("Resultado: aprovado!")\nelse:\n    print("Resultado: continue praticando!")`,
+      jogo: `# Jogo de adivinhação\nimport random\nsecreto = random.randint(1, 10)\nchute = 7\nprint("O número sorteado foi:", secreto)\nif chute == secreto:\n    print("Você acertou!")\nelif chute < secreto:\n    print("Tente um número maior.")\nelse:\n    print("Tente um número menor.")`,
+      lista: `// Lista de compras\nconst compras = ["arroz", "feijão", "frutas"];\ncompras.push("leite");\nconsole.log("Minha lista:");\ncompras.forEach((item, indice) => {\n  console.log((indice + 1) + ". " + item);\n});`
+    };
+    const editor = document.getElementById('codeEditor');
+    const languageSelect = document.getElementById('languageSelect');
+    const consoleBox = document.getElementById('console');
+    const charCount = document.getElementById('charCount');
+    const languageHint = document.getElementById('languageHint');
+    const toast = document.getElementById('toast');
+    let pyodidePromise = null;
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      window.clearTimeout(showToast.timer);
+      showToast.timer = window.setTimeout(() => toast.classList.remove('show'), 2600);
+    }
+    function updateCount() {
+      const count = editor.value.length;
+      charCount.textContent = `${count} ${count === 1 ? 'caractere' : 'caracteres'}`;
+    }
+    function setOutput(text, type = 'info') {
+      consoleBox.className = `console ${type}`;
+      consoleBox.textContent = text || 'O programa terminou sem produzir saída.';
+    }
+    function setCode(language, code) {
+      languageSelect.value = language;
+      editor.value = code;
+      languageHint.textContent = language === 'python'
+        ? 'Python roda com um interpretador carregado no navegador.'
+        : 'JavaScript roda diretamente em uma área isolada do navegador.';
+      updateCount();
+      editor.focus();
+    }
+    function getSavedKey() { return `codelab-${languageSelect.value}`; }
+
+    function loadPyodideRuntime() {
+      if (window.loadPyodide) return Promise.resolve(window.loadPyodide);
+      if (pyodidePromise) return pyodidePromise;
+      pyodidePromise = new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/pyodide.js';
+        script.onload = () => resolve(window.loadPyodide);
+        script.onerror = () => reject(new Error('Não foi possível carregar o interpretador Python. Verifique sua conexão.'));
+        document.head.appendChild(script);
+      });
+      return pyodidePromise;
+    }
+    async function runPython(code) {
+      setOutput('Carregando o interpretador Python pela primeira vez...\nIsso pode levar alguns segundos.', 'info');
+      const load = await loadPyodideRuntime();
+      const pyodide = await load({ indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.26.2/full/' });
+      const output = [];
+      pyodide.setStdout({ batched: value => output.push(value) });
+      pyodide.setStderr({ batched: value => output.push(value) });
+      await pyodide.runPythonAsync(code);
+      return output.join('\n');
+    }
+    function runJavaScript(code) {
+      return new Promise((resolve, reject) => {
+        const workerSource = `
+          self.onmessage = function(event) {
+            const logs = [];
+            const format = value => typeof value === 'object' ? JSON.stringify(value, null, 2) : String(value);
+            const fakeConsole = { log: (...args) => logs.push(args.map(format).join(' ')), info: (...args) => logs.push(args.map(format).join(' ')), warn: (...args) => logs.push('Aviso: ' + args.map(format).join(' ')), error: (...args) => logs.push('Erro: ' + args.map(format).join(' ')) };
+            try { new Function('console', '"use strict";\\n' + event.data)(fakeConsole); self.postMessage({ ok: true, output: logs.join('\\n') }); }
+            catch (error) { self.postMessage({ ok: false, error: error.name + ': ' + error.message }); }
+          };
+        `;
+        const blob = new Blob([workerSource], { type: 'text/javascript' });
+        const worker = new Worker(URL.createObjectURL(blob));
+        const timeout = window.setTimeout(() => { worker.terminate(); reject(new Error('O programa demorou demais e foi interrompido.')); }, 2500);
+        worker.onmessage = event => { window.clearTimeout(timeout); worker.terminate(); event.data.ok ? resolve(event.data.output) : reject(new Error(event.data.error)); };
+        worker.postMessage(code);
+      });
+    }
+    async function runCode() {
+      const code = editor.value.trim();
+      if (!code) { setOutput('Escreva algum código antes de executar.', 'err'); return; }
+      const runButton = document.getElementById('runButton');
+      runButton.disabled = true;
+      runButton.textContent = 'Executando...';
+      try {
+        const output = languageSelect.value === 'python' ? await runPython(code) : await runJavaScript(code);
+        setOutput(output, 'ok');
+      } catch (error) {
+        setOutput(`${error.name || 'Erro'}: ${error.message || error}`, 'err');
+      } finally {
+        runButton.disabled = false;
+        runButton.textContent = '▶ Executar';
+      }
+    }
+
+    document.getElementById('runButton').addEventListener('click', runCode);
+    document.getElementById('clearButton').addEventListener('click', () => { setOutput('A saída aparecerá aqui quando você executar o código.', 'empty'); });
+    document.getElementById('exampleButton').addEventListener('click', () => { setCode(languageSelect.value, examples[languageSelect.value]); showToast('Exemplo carregado no editor.'); });
+    document.getElementById('saveButton').addEventListener('click', () => { localStorage.setItem(getSavedKey(), editor.value); showToast(`Código de ${languageSelect.value === 'python' ? 'Python' : 'JavaScript'} salvo neste navegador.`); });
+    languageSelect.addEventListener('change', () => {
+      const saved = localStorage.getItem(getSavedKey());
+      setCode(languageSelect.value, saved || examples[languageSelect.value]);
+      setOutput('A saída aparecerá aqui quando você executar o código.', 'empty');
+    });
+    editor.addEventListener('input', updateCount);
+    editor.addEventListener('keydown', event => {
+      if (event.key === 'Tab') { event.preventDefault(); const start = editor.selectionStart; editor.value = editor.value.slice(0, start) + '  ' + editor.value.slice(editor.selectionEnd); editor.selectionStart = editor.selectionEnd = start + 2; updateCount(); }
+      if ((event.ctrlKey || event.metaKey) && event.key === 'Enter') { event.preventDefault(); runCode(); }
+    });
+    document.querySelectorAll('[data-snippet]').forEach(button => button.addEventListener('click', () => { setCode(button.dataset.code, button.dataset.snippet); document.getElementById('laboratorio').scrollIntoView({ behavior: 'smooth' }); showToast('Exemplo pronto para testar.'); }));
+    document.querySelectorAll('[data-project]').forEach(button => button.addEventListener('click', () => { const key = button.dataset.project; const language = key === 'lista' ? 'javascript' : 'python'; setCode(language, projects[key]); document.getElementById('laboratorio').scrollIntoView({ behavior: 'smooth' }); showToast('Projeto carregado. Agora é só personalizar!'); }));
+    document.getElementById('themeButton').addEventListener('click', () => { document.body.classList.toggle('focus-mode'); const active = document.body.classList.contains('focus-mode'); document.getElementById('themeButton').textContent = active ? 'Mostrar tudo' : 'Foco no código'; document.querySelectorAll('section:not(#laboratorio), .hero').forEach(element => element.style.display = active ? 'none' : ''); document.getElementById('laboratorio').scrollIntoView({ behavior: 'smooth' }); });
+    setCode('python', localStorage.getItem('codelab-python') || examples.python);
+  </script>
+</body>
+</html>
